@@ -46,6 +46,7 @@ kubectl apply -f postgres-init.yaml
 kubectl apply -f postgres.yaml
 kubectl apply -f backend.yaml
 kubectl apply -f frontend.yaml
+kubectl apply -f ingress.yaml
 ```
 
 ### **Option 3: Using Kustomize**
