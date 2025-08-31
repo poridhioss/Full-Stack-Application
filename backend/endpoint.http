@@ -1,0 +1,197 @@
+### Variables
+@baseUrl = http://localhost:5000
+@token = {{login.response.body.token}}
+@userId = {{register.response.body.user.id}}
+
+###
+# =================================
+# SERVER STATUS
+# =================================
+
+### Get Server Status
+GET {{baseUrl}}
+
+###
+# =================================
+# USER AUTHENTICATION
+# =================================
+
+### Register New User
+# @name register
+POST {{baseUrl}}/api/users/register
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "password123",
+    "first_name": "Test",
+    "last_name": "User"
+}
+
+### Register User with Minimal Data
+POST {{baseUrl}}/api/users/register
+Content-Type: application/json
+
+{
+    "username": "minimaluser",
+    "email": "minimal@example.com",
+    "password": "password123"
+}
+
+### Register User - Duplicate Email (Should Fail)
+POST {{baseUrl}}/api/users/register
+Content-Type: application/json
+
+{
+    "username": "duplicate",
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### Register User - Missing Required Fields (Should Fail)
+POST {{baseUrl}}/api/users/register
+Content-Type: application/json
+
+{
+    "username": "incomplete"
+}
+
+### Login User
+# @name login
+POST {{baseUrl}}/api/users/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+
+### Login - Invalid Credentials (Should Fail)
+POST {{baseUrl}}/api/users/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com",
+    "password": "wrongpassword"
+}
+
+### Login - Missing Fields (Should Fail)
+POST {{baseUrl}}/api/users/login
+Content-Type: application/json
+
+{
+    "email": "test@example.com"
+}
+
+###
+# =================================
+# USER MANAGEMENT (Public Endpoints)
+# =================================
+
+### Get All Users
+GET {{baseUrl}}/api/users
+
+### Get User by ID
+GET {{baseUrl}}/api/users/{{userId}}
+
+### Get User by ID - Non-existent User (Should Fail)
+GET {{baseUrl}}/api/users/999999
+
+###
+# =================================
+# USER MANAGEMENT (Protected Endpoints)
+# =================================
+
+### Update User Profile
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "username": "updateduser",
+    "email": "updated@example.com",
+    "first_name": "Updated",
+    "last_name": "User"
+}
+
+### Update User Profile - Partial Update
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "first_name": "NewFirstName"
+}
+
+### Update User - Without Token (Should Fail)
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+
+{
+    "first_name": "ShouldFail"
+}
+
+### Update User - Invalid Token (Should Fail)
+PUT {{baseUrl}}/api/users/{{userId}}
+Content-Type: application/json
+Authorization: Bearer invalid_token_here
+
+{
+    "first_name": "ShouldFail"
+}
+
+### Update User Password
+PUT {{baseUrl}}/api/users/{{userId}}/password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "currentPassword": "password123",
+    "newPassword": "newpassword123"
+}
+
+### Update Password - Wrong Current Password (Should Fail)
+PUT {{baseUrl}}/api/users/{{userId}}/password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "currentPassword": "wrongpassword",
+    "newPassword": "newpassword123"
+}
+
+### Update Password - Missing Fields (Should Fail)
+PUT {{baseUrl}}/api/users/{{userId}}/password
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "currentPassword": "password123"
+}
+
+### Delete User
+DELETE {{baseUrl}}/api/users/{{userId}}
+Authorization: Bearer {{token}}
+
+### Delete User - Without Token (Should Fail)
+DELETE {{baseUrl}}/api/users/{{userId}}
+
+### Delete User - Non-existent User (Should Fail)
+DELETE {{baseUrl}}/api/users/999999
+Authorization: Bearer {{token}}
+
+### Test Invalid JSON (Should Fail)
+POST {{baseUrl}}/api/users/register
+Content-Type: application/json
+
+{
+    "username": "invalidjson"
+    "email": "invalid@example.com"
+}
+
+### Test Empty Request Body
+POST {{baseUrl}}/api/users/register
+Content-Type: application/json
+
+{}

@@ -9,14 +9,83 @@ A simple RESTful API for user management built with Node.js, Express, and Postgr
 - Password hashing with bcrypt
 - PostgreSQL database integration
 - JWT-based authentication for protected routes
+- **🐳 Docker support for easy deployment**
 
 ## Prerequisites
 
+### For Local Development:
 - Node.js (v14 or higher)
 - PostgreSQL database
 - npm or yarn
 
-## Installation
+### For Docker Development:
+- Docker
+- Docker Compose
+
+## Installation & Running
+
+### 🐳 Option 1: Docker (Recommended)
+
+#### Quick Start
+```bash
+# Navigate to backend directory
+cd backend
+
+# Start development environment (builds and runs both backend and database)
+docker-compose up --build
+
+# Or run in background
+docker-compose up -d --build
+```
+
+#### Using Helper Scripts
+**Windows:**
+```cmd
+# Start development environment
+docker.bat dev
+
+# Start in background
+docker.bat dev-detached
+
+# View logs
+docker.bat logs
+
+# Stop services
+docker.bat stop
+
+# Clean up
+docker.bat clean
+```
+
+**Linux/Mac:**
+```bash
+# Make script executable
+chmod +x docker.sh
+
+# Start development environment
+./docker.sh dev
+
+# Start in background
+./docker.sh dev-detached
+
+# View logs
+./docker.sh logs
+
+# Stop services
+./docker.sh stop
+
+# Clean up
+./docker.sh clean
+```
+
+#### Full Stack with Database (from DB directory)
+```bash
+# Navigate to DB directory and start everything
+cd ../DB
+docker-compose up --build
+```
+
+### 📦 Option 2: Local Development
 
 1. Navigate to the backend directory:
 ```bash
@@ -44,17 +113,72 @@ npm run init-db
 
 ## Running the Application
 
-### Development mode (with auto-reload):
+### 🐳 Docker Development
+```bash
+# Start all services (backend + database)
+docker-compose up --build
+
+# Start in background
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f backend
+
+# Stop services
+docker-compose down
+
+# Initialize database in container
+docker-compose exec backend npm run init-db
+```
+
+### 📦 Local Development
+
+#### Development mode (with auto-reload):
 ```bash
 npm run dev
 ```
 
-### Production mode:
+#### Production mode:
 ```bash
 npm start
 ```
 
 The server will run on `http://localhost:5000` by default.
+
+## 🐳 Docker Configuration
+
+### Images
+- **Backend**: Node.js 18 Alpine (multi-stage build)
+- **Database**: PostgreSQL 15 Alpine
+
+### Services
+- **Backend**: `http://localhost:5000`
+- **PostgreSQL**: `localhost:5432`
+- **pgAdmin**: `http://localhost:8080` (when using full stack)
+
+### Environment Variables
+Docker services use these environment variables:
+```
+DATABASE_HOST=postgres
+DATABASE_USER=postgres
+DATABASE_PASSWORD=postgres123
+DATABASE_NAME=user_management
+DATABASE_PORT=5432
+JWT_SECRET=your_jwt_secret_key_here
+PORT=5000
+```
+
+### Docker Commands
+```bash
+# Build backend image only
+docker build -t user-management-backend .
+
+# Run backend with local PostgreSQL
+docker run -p 5000:5000 --env-file .env user-management-backend
+
+# Full stack from DB directory
+cd ../DB && docker-compose up --build
+```
 
 ## API Endpoints
 
