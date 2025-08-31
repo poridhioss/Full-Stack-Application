@@ -1,8 +1,82 @@
-# Getting Started with Create React App
+# User Management Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React TypeScript frontend application for the User Management system.
+
+## Features
+
+- User registration and login
+- User dashboard and profile management
+- JWT-based authentication
+- Responsive design
+- TypeScript for type safety
+
+## Prerequisites
+
+### For Local Development:
+- Node.js (v16 or higher)
+- npm or yarn
+
+### For Docker:
+- Docker
+- Docker Compose
+
+## Installation & Running
+
+### 🐳 Docker (Recommended)
+
+#### Quick Start - Frontend Only
+```bash
+# Build and run frontend container
+docker-compose up --build
+
+# Or run in background
+docker-compose up -d --build
+```
+
+#### Full Stack (from root/DB directory)
+```bash
+# Navigate to DB directory and start everything
+cd ../DB
+docker-compose up --build
+```
+
+### 📦 Local Development
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Update the API URL if needed (default: http://localhost:5000/api)
+
+3. Start development server:
+```bash
+npm start
+```
+
+The app will run on [http://localhost:3000](http://localhost:3000).
+
+## 🐳 Docker Configuration
+
+### Build
+- **Multi-stage build**: Node.js for building, Nginx for serving
+- **Optimized**: Production-ready static files
+- **Lightweight**: Alpine-based images
+
+### Services
+- **Frontend**: `http://localhost:3000` (Docker) / `http://localhost:3000` (Local)
+- **API Proxy**: Nginx proxies `/api` requests to backend
+
+### Environment Variables
+```
+REACT_APP_API_URL=http://localhost:5000/api
+```
 
 ## Available Scripts
+
+### Development
 
 In the project directory, you can run:
 

@@ -1,24 +1,43 @@
-# Database Setup with Docker
+# Full Stack Application with Docker
 
-This directory contains the Docker configuration for running PostgreSQL database for the backend service.
+This directory contains the Docker configuration for the complete User Management application stack.
 
-## Quick Start
+## 🚀 Quick Start - Complete Application
 
-1. **Start the PostgreSQL database:**
-   ```bash
-   docker-compose up -d postgres
-   ```
+**Start everything (Frontend + Backend + Database):**
+```bash
+docker-compose up --build
+```
 
-2. **Start PostgreSQL with pgAdmin (optional):**
-   ```bash
-   docker-compose up -d
-   ```
+**Start in background:**
+```bash
+docker-compose up -d --build
+```
 
-## Services
+## 📊 Application URLs
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **pgAdmin**: http://localhost:8080 (admin@admin.com / admin123)
+- **PostgreSQL**: localhost:5432
+
+## 🐳 Services
+
+### Frontend (React)
+- **Image:** Node.js 18 + Nginx
+- **Container:** user_management_frontend
+- **Port:** 3000 → 80
+- **Features:** React TypeScript app with Nginx proxy
+
+### Backend (Node.js)
+- **Image:** Node.js 18 Alpine
+- **Container:** user_management_backend
+- **Port:** 5000
+- **Features:** Express API with JWT authentication
 
 ### PostgreSQL Database
 - **Image:** postgres:15-alpine
-- **Container Name:** user_management_db
+- **Container:** user_management_db
 - **Port:** 5432
 - **Database:** user_management
 - **Username:** postgres
@@ -26,19 +45,74 @@ This directory contains the Docker configuration for running PostgreSQL database
 
 ### pgAdmin (Optional)
 - **Image:** dpage/pgadmin4:latest
-- **Container Name:** user_management_pgadmin
+- **Container:** user_management_pgadmin
 - **Port:** 8080
 - **Email:** admin@admin.com
 - **Password:** admin123
 
+## 🔧 Development Commands
+
+### Start Services
+```bash
+# Full stack
+docker-compose up --build
+
+# Specific services only
+docker-compose up frontend backend postgres
+docker-compose up -d postgres  # Database only
+
+# Background mode
+docker-compose up -d --build
+```
+
+### Monitor Services
+```bash
+# View logs
+docker-compose logs -f frontend
+docker-compose logs -f backend
+docker-compose logs postgres
+
+# Check status
+docker-compose ps
+```
+
+### Stop Services
+```bash
+# Stop all
+docker-compose down
+
+# Stop and remove volumes (⚠️ deletes data)
+docker-compose down -v
+```
+
+### Individual Service Management
+```bash
+# Restart a service
+docker-compose restart backend
+
+# Rebuild and restart
+docker-compose up --build backend
+
+# Scale frontend (multiple instances)
+docker-compose up --scale frontend=2
+```
+
 ## Environment Configuration
 
-The database credentials are:
-- Host: localhost (when connecting from host machine)
-- Port: 5432
-- Database: user_management
-- Username: postgres
-- Password: postgres123
+### Production Environment Variables
+```bash
+# Frontend
+REACT_APP_API_URL=http://localhost:5000/api
+
+# Backend
+DATABASE_HOST=postgres
+DATABASE_USER=postgres
+DATABASE_PASSWORD=postgres123
+DATABASE_NAME=user_management
+DATABASE_PORT=5432
+JWT_SECRET=your_jwt_secret_key_here
+PORT=5000
+```
 
 ## Backend Connection
 
