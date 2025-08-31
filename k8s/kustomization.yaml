@@ -1,0 +1,55 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: user-management-app
+
+namespace: user-management
+
+resources:
+  - namespace.yaml
+  - postgres-init.yaml
+  - postgres.yaml
+  - backend.yaml
+  - frontend.yaml
+  - ingress.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/name: user-management
+  app.kubernetes.io/version: v1.0.0
+  app.kubernetes.io/component: full-stack-app
+
+# Images that can be easily updated
+images:
+  - name: konami98/user-management-backend:latest
+    newTag: latest
+  - name: konami98/user-management-frontend:latest
+    newTag: latest
+
+# ConfigMap generator for environment-specific configs
+configMapGenerator:
+  - name: app-config
+    literals:
+      - APP_ENV=production
+      - LOG_LEVEL=info
+
+# Secret generator for sensitive data
+secretGenerator:
+  - name: app-secrets
+    literals:
+      - DATABASE_PASSWORD=postgres123
+      - JWT_SECRET=jwt_secret_key
+
+# Patches for different environments
+patchesStrategicMerge:
+  - patches/production.yaml
+
+# Resource limits and requests
+replicas:
+  - name: frontend
+    count: 2
+  - name: backend
+    count: 2
+  - name: postgres
+    count: 1
