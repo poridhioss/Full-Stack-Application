@@ -20,9 +20,10 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser, onLogout }) => {
   const fetchUsers = async () => {
     try {
       const usersData = await userService.getAllUsers();
-      setUsers(usersData);
+      setUsers(Array.isArray(usersData) ? usersData : []); // Ensure it's always an array
     } catch (err: any) {
       setError('Failed to fetch users');
+      setUsers([]); // Set empty array on error
     } finally {
       setLoading(false);
     }
@@ -47,11 +48,25 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser, onLogout }) => {
   };
 
   const handleDelete = async (userId: number) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    const isCurrentUser = userId === currentUser.id;
+    const confirmMessage = isCurrentUser 
+      ? 'Are you sure you want to delete your own account? You will be logged out automatically.' 
+      : 'Are you sure you want to delete this user?';
+    
+    if (!window.confirm(confirmMessage)) return;
 
     try {
       await userService.deleteUser(userId);
-      setUsers(users.filter(u => u.id !== userId));
+      
+      if (isCurrentUser) {
+        // If deleting current user, clear storage and logout
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        onLogout();
+      } else {
+        // If deleting another user, just update the users list
+        setUsers(users.filter(u => u.id !== userId));
+      }
     } catch (err: any) {
       setError('Failed to delete user');
     }
@@ -99,9 +114,11 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser, onLogout }) => {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
-              <tr key={user.id}>
-                <td style={{ border: '1px solid #dee2e6', padding: '8px' }}>{user.id}</td>
+            {Array.isArray(users) && users.map(user => (
+              <tr key={user.id} style={{ backgroundColor: user.id === currentUser.id ? '#e3f2fd' : 'transparent' }}>
+                <td style={{ border: '1px solid #dee2e6', padding: '8px' }}>
+                  {user.id} {user.id === currentUser.id && <span style={{ color: '#007bff', fontWeight: 'bold' }}>(You)</span>}
+                </td>
                 <td style={{ border: '1px solid #dee2e6', padding: '8px' }}>{user.username}</td>
                 <td style={{ border: '1px solid #dee2e6', padding: '8px' }}>{user.email}</td>
                 <td style={{ border: '1px solid #dee2e6', padding: '8px' }}>
@@ -116,9 +133,17 @@ const Dashboard: React.FC<DashboardProps> = ({ currentUser, onLogout }) => {
                   </button>
                   <button
                     onClick={() => handleDelete(user.id)}
-                    style={{ padding: '3px 8px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px' }}
+                    style={{ 
+                      padding: '3px 8px', 
+                      backgroundColor: user.id === currentUser.id ? '#ff6b35' : '#dc3545', 
+                      color: 'white', 
+                      border: 'none', 
+                      borderRadius: '3px',
+                      fontWeight: user.id === currentUser.id ? 'bold' : 'normal'
+                    }}
+                    title={user.id === currentUser.id ? 'Delete your account (will logout)' : 'Delete user'}
                   >
-                    Delete
+                    {user.id === currentUser.id ? 'Delete Account' : 'Delete'}
                   </button>
                 </td>
               </tr>

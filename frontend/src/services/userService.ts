@@ -47,17 +47,17 @@ export const userService = {
 
   getAllUsers: async (): Promise<User[]> => {
     const response = await api.get('/users');
-    return response.data;
+    return response.data.users; // Extract users array from response object
   },
 
   getUserById: async (id: number): Promise<User> => {
     const response = await api.get(`/users/${id}`);
-    return response.data;
+    return response.data.user; // Extract user from response object
   },
 
   updateUser: async (id: number, userData: UpdateUserData): Promise<User> => {
     const response = await api.put(`/users/${id}`, userData);
-    return response.data;
+    return response.data.user; // Extract user from response object
   },
 
   updatePassword: async (id: number, passwordData: UpdatePasswordData): Promise<{ message: string }> => {
